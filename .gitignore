@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.whl
+.vscode/
+target/
+.mvn/
