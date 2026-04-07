@@ -33,3 +33,5 @@ target/
 hs_err_pid*
 replay_pid*
 >>>>>>> c42112a0654af3643ef94d21223ce16088032520
+node_modules/
+*.mp4
