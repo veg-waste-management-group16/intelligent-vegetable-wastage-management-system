@@ -11,6 +11,21 @@ const addDays = (dateStr, days) => {
     return new Date(newTime).toISOString().split('T')[0];
 };
 
+const vegetableCategoryMap = {
+    'Cabbage': 'Leafy Vegetable',
+    'Beans': 'Seed/Pod Vegetable',
+    'Tomato': 'Fruit Vegetable',
+    'Cauliflower': 'Flower Vegetable',
+    'Potato': 'Root Vegetable',
+    'Okra': 'Fruit Vegetable',
+    'Brinjal': 'Fruit Vegetable',
+    'Green chilli': 'Fruit Vegetable',
+    'Onion': 'Bulb Vegetable',
+    'Carrot': 'Root Vegetable'
+};
+
+const vegetableOptions = Object.keys(vegetableCategoryMap);
+
 const AddStockForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -36,6 +51,18 @@ const AddStockForm = () => {
         const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
         setMaxDate(localISOTime);
     }, []);
+
+    useEffect(() => {
+        if (formData.vegetableName) {
+            const autoCategory = vegetableCategoryMap[formData.vegetableName] || '';
+            if (formData.category !== autoCategory) {
+                setFormData((prev) => ({ ...prev, category: autoCategory }));
+                if (touched.category) {
+                    setErrors((prev) => ({ ...prev, category: validateField('category', autoCategory) }));
+                }
+            }
+        }
+    }, [formData.vegetableName]);
 
     const expiryMaxDate = formData.harvestDate ? addDays(formData.harvestDate, 14) : undefined; // 2 weeks limit
 
@@ -157,7 +184,12 @@ const AddStockForm = () => {
                         </div>
                         <div className="form-section">
                             <label htmlFor="vegetableName">Vegetable Name <span className="required">*</span></label>
-                            <input type="text" id="vegetableName" name="vegetableName" value={formData.vegetableName} onChange={handleChange} onBlur={handleBlur} />
+                            <select id="vegetableName" name="vegetableName" value={formData.vegetableName} onChange={handleChange} onBlur={handleBlur}>
+                                <option value="">Select Vegetable</option>
+                                {vegetableOptions.map((vegetable) => (
+                                    <option key={vegetable} value={vegetable}>{vegetable}</option>
+                                ))}
+                            </select>
                             {touched.vegetableName && errors.vegetableName && <span className="error-text" style={{color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block'}}>{errors.vegetableName}</span>}
                         </div>
                     </div>
@@ -170,9 +202,9 @@ const AddStockForm = () => {
                                 <option value="Leafy Vegetable">Leafy Vegetable</option>
                                 <option value="Root Vegetable">Root Vegetable</option>
                                 <option value="Fruit Vegetable">Fruit Vegetable</option>
-                                <option value="Cruciferous Vegetable">Cruciferous Vegetable</option>
-                                <option value="Allium">Allium (Onion/Garlic)</option>
-                                <option value="Marrow">Marrows</option>
+                                <option value="Seed/Pod Vegetable">Seed/Pod Vegetable</option>
+                                <option value="Flower Vegetable">Flower Vegetable</option>
+                                <option value="Bulb Vegetable">Bulb Vegetable</option>
                             </select>
                             {touched.category && errors.category && <span className="error-text" style={{color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block'}}>{errors.category}</span>}
                         </div>

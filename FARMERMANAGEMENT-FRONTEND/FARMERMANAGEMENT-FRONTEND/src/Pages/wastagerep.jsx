@@ -82,7 +82,37 @@ const WastageReport = () => {
     };
 
     const downloadReport = () => {
-        window.open(`${API_BASE}/farmer/${farmerId}/wastage-report/download`, '_blank');
+        const items = allWastageItems.length > 0 ? allWastageItems : [];
+        const header = ['Vegetable', 'Stock (kg)', 'Wastage (kg)', 'Qty Sold (kg)', 'Unit Price', 'Days Left', 'Severity', 'Profit Gain', 'Loss If Not Sold'];
+        const rows = items.map(item => [
+            item.vegetableName || '',
+            item.currentQuantityKg ?? item.stockKg ?? '',
+            item.potentialWastageKg ?? item.wastageKg ?? '',
+            item.quantitySold ?? '',
+            item.unitPrice ?? '',
+            item.daysUntilExpiry ?? item.daysLeft ?? '',
+            item.severity || item.wastageSeverity || '',
+            getProfitGain(item).toFixed(2),
+            ((item.potentialWastageKg ?? 0) * (item.unitPrice ?? 0)).toFixed(2),
+        ]);
+
+        const escapeValue = (value) => {
+            const text = String(value ?? '');
+            return text.includes(',') || text.includes('"') || text.includes('\n')
+                ? `"${text.replace(/"/g, '""')}"`
+                : text;
+        };
+
+        const csvContent = [header, ...rows].map(row => row.map(escapeValue).join(',')).join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `financial-report-${farmerId}-${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
     const getFilteredItems = () => {

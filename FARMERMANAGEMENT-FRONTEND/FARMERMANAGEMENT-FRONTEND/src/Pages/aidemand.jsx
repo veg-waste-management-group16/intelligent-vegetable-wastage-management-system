@@ -222,6 +222,18 @@ const AIDemand = () => {
     setIsQuickActionOpen(true);
   };
 
+  const isStockExpired = (stock) => {
+    if (!stock?.expiryDate) return false;
+    return getDaysUntilExpiry(stock.expiryDate) < 0;
+  };
+
+  const isStockUnavailable = (stock) => {
+    const status = String(stock?.status || '').toLowerCase();
+    return status === 'unavailable';
+  };
+
+  const activeStocks = stocks.filter((stock) => !isStockUnavailable(stock) && !isStockExpired(stock));
+
   const handleApplySuggestedPrice = (stockId, suggestedPrice) => {
     setSelectedStockId(String(stockId));
     setPriceInput(suggestedPrice);
@@ -230,8 +242,8 @@ const AIDemand = () => {
   };
 
   const openQuickActionModal = () => {
-    if (!selectedStockId && stocks.length > 0) {
-      setSelectedStockId(String(stocks[0].id));
+    if (!selectedStockId && activeStocks.length > 0) {
+      setSelectedStockId(String(activeStocks[0].id));
     }
     setIsQuickActionOpen(true);
   };
@@ -257,13 +269,13 @@ const AIDemand = () => {
     }
   };
 
-  const getDaysUntilExpiry = (expiryDate) => {
+  function getDaysUntilExpiry(expiryDate) {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const exp = new Date(expiryDate);
     exp.setHours(0, 0, 0, 0);
     return Math.floor((exp - now) / (1000 * 60 * 60 * 24));
-  };
+  }
 
   const getWastageRisk = (daysLeft) => {
     if (daysLeft <= 1) return 'High';
@@ -271,7 +283,7 @@ const AIDemand = () => {
     return 'Low';
   };
 
-  const aiPredictions = stocks.map((stock) => {
+  const aiPredictions = activeStocks.map((stock) => {
     const serverPrediction = predictionsByStockId[stock.id];
     const estimatedDemand = Number(
       serverPrediction?.weeklyDemandKg ??
@@ -471,7 +483,7 @@ const AIDemand = () => {
                 <label htmlFor="qaStockSelect">Select Vegetable</label>
                 <select id="qaStockSelect" value={selectedStockId} onChange={(e) => setSelectedStockId(e.target.value)}>
                   <option value="">— Choose stock —</option>
-                  {stocks.map(stock => (
+                  {activeStocks.map(stock => (
                     <option key={stock.id} value={stock.id}>{stock.vegetableName}</option>
                   ))}
                 </select>
@@ -639,7 +651,7 @@ const AIDemand = () => {
               </tr>
             </thead>
             <tbody>
-              {stocks.map((stock) => {
+              {activeStocks.map((stock) => {
                 const prediction = aiPredictions.find(p => p.id === stock.id);
                 const daysLeft = getDaysUntilExpiry(stock.expiryDate);
                 const expiryLabel = daysLeft >= 0 ? `${daysLeft} days` : 'Expired';
