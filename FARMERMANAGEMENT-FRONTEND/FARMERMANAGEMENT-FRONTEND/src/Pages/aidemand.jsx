@@ -37,7 +37,13 @@ const AIDemand = () => {
       }
 
       const payload = await res.json();
-      const rows = payload.data || [];
+      const rows = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(payload.items)
+        ? payload.items
+        : [];
       const normalizedStocks = rows.map((item) => ({
         ...item,
         id: item.stockId || item.id,

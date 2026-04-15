@@ -30,7 +30,14 @@ const FarmerDashboard = () => {
 
             if (stocksResponse.status === 'fulfilled' && stocksResponse.value.ok) {
                 const stockPayload = await stocksResponse.value.json();
-                const normalizedStocks = (stockPayload.data || []).map((item) => ({
+                const rows = Array.isArray(stockPayload)
+                    ? stockPayload
+                    : Array.isArray(stockPayload.data)
+                    ? stockPayload.data
+                    : Array.isArray(stockPayload.items)
+                    ? stockPayload.items
+                    : [];
+                const normalizedStocks = rows.map((item) => ({
                     ...item,
                     id: item.stockId ?? item.id,
                     status: item.availabilityStatus || item.status || 'Available',
