@@ -39,6 +39,9 @@ public class FarmerStock {
     @Column(nullable = false, length = 20)
     private String availabilityStatus;
 
+    @Column(name = "is_visible", nullable = false)
+    private Boolean isVisible = true;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -46,11 +49,12 @@ public class FarmerStock {
     private LocalDateTime updatedAt;
 
     // Constructors
-    public FarmerStock() {}
+    public FarmerStock() {
+    }
 
     public FarmerStock(String farmerId, String vegetableName, String category,
-                       LocalDate harvestDate, Double quantityKg, Double pricePerKg,
-                       String qualityGrade, LocalDate expiryEstimate) {
+            LocalDate harvestDate, Double quantityKg, Double pricePerKg,
+            String qualityGrade, LocalDate expiryEstimate) {
         this.farmerId = farmerId;
         this.vegetableName = vegetableName;
         this.category = category;
@@ -60,6 +64,7 @@ public class FarmerStock {
         this.qualityGrade = qualityGrade;
         this.expiryEstimate = expiryEstimate;
         this.availabilityStatus = "Available";
+        this.isVisible = true;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -145,6 +150,14 @@ public class FarmerStock {
         this.availabilityStatus = availabilityStatus;
     }
 
+    public Boolean getIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(Boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -185,6 +198,7 @@ public class FarmerStock {
                 ", qualityGrade='" + qualityGrade + '\'' +
                 ", expiryEstimate=" + expiryEstimate +
                 ", availabilityStatus='" + availabilityStatus + '\'' +
+                ", isVisible=" + isVisible +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

@@ -56,6 +56,7 @@ public class FarmerStockService {
         farmerStock.setPricePerKg(stockDTO.getPricePerKg());
         farmerStock.setQualityGrade(stockDTO.getQualityGrade());
         farmerStock.setAvailabilityStatus("Available");
+        farmerStock.setIsVisible(true);
         farmerStock.setCreatedAt(LocalDateTime.now());
         farmerStock.setUpdatedAt(LocalDateTime.now());
 
