@@ -76,7 +76,13 @@ const FarmerDashboard = () => {
     };
 
     const financialWastageValue = Number(stats.financialWastage || 0);
-    const wastageItems = Array.isArray(wastageReport?.wastageItems) ? wastageReport.wastageItems : [];
+    const wastageItems = Array.isArray(wastageReport?.wastageItems)
+        ? wastageReport.wastageItems
+        : Array.isArray(wastageReport?.data)
+        ? wastageReport.data
+        : Array.isArray(wastageReport)
+        ? wastageReport
+        : [];
     const severityCounts = wastageReport?.severityCounts || wastageItems.reduce((counts, item) => {
         const severity = String(item.severity || item.wastageSeverity || 'UNKNOWN').toUpperCase();
         counts[severity] = (counts[severity] || 0) + 1;
@@ -92,13 +98,17 @@ const FarmerDashboard = () => {
         .sort((a, b) => Number(b.financialLoss || 0) - Number(a.financialLoss || 0))
         .slice(0, 5);
     const priceOverviewItems = [...stocks]
-        .sort((a, b) => new Date(b.updatedAt || b.createdAt || b.harvestDate || 0) - new Date(a.updatedAt || a.createdAt || a.harvestDate || 0))
+        .map((stock) => ({
+            ...stock,
+            sortDate: new Date(stock.updatedAt || stock.createdAt || stock.harvestDate || stock.expiryDate || 0).getTime() || 0,
+        }))
+        .sort((a, b) => b.sortDate - a.sortDate)
         .slice(0, 6)
         .map((stock) => ({
             id: stock.id,
-            name: stock.vegetableName,
-            quantity: Number(stock.quantityKg || 0),
-            price: Number(stock.pricePerKg || 0),
+            name: stock.vegetableName || stock.name || 'Unknown Vegetable',
+            quantity: Number(stock.quantityKg || stock.quantity || 0),
+            price: Number(stock.pricePerKg || stock.price || 0),
             dateLabel: stock.createdAt || stock.updatedAt || stock.harvestDate || stock.expiryDate || 'N/A',
         }));
 

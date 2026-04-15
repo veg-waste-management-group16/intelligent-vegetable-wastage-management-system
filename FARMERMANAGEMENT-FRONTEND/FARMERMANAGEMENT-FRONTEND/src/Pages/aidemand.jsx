@@ -95,12 +95,12 @@ const AIDemand = () => {
   // Auto-populate price when vegetable is selected
   useEffect(() => {
     if (selectedStockId) {
-      const selected = stocks.find(s => s.id == selectedStockId);
+      const selected = stocks.find(s => String(s.id) === String(selectedStockId));
       if (selected) {
-        setPriceInput(selected.pricePerKg);
-        setCalculatedPrice(selected.pricePerKg);
+        setPriceInput(selected.pricePerKg ?? '');
+        setCalculatedPrice(selected.pricePerKg ?? '');
         setStatusInput(selected.status || 'Available');
-        setQtyInput(selected.quantityKg);
+        setQtyInput(selected.quantityKg ?? '');
       }
     } else {
       setPriceInput('');
@@ -115,7 +115,7 @@ const AIDemand = () => {
       alert('Please select a vegetable first');
       return;
     }
-    const currentPrice = stocks.find(s => s.id == selectedStockId)?.pricePerKg;
+    const currentPrice = stocks.find(s => String(s.id) === String(selectedStockId))?.pricePerKg;
     if (currentPrice) {
       const discountedPrice = currentPrice - (currentPrice * discountPercent / 100);
       const finalPrice = Number(discountedPrice.toFixed(2));
@@ -212,12 +212,12 @@ const AIDemand = () => {
   };
 
   const handleEdit = (stockId) => {
-    setSelectedStockId(stockId);
+    setSelectedStockId(String(stockId));
     setIsQuickActionOpen(true);
   };
 
   const handleApplySuggestedPrice = (stockId, suggestedPrice) => {
-    setSelectedStockId(stockId);
+    setSelectedStockId(String(stockId));
     setPriceInput(suggestedPrice);
     setCalculatedPrice(suggestedPrice);
     setIsQuickActionOpen(true);
@@ -232,15 +232,22 @@ const AIDemand = () => {
 
   const openDemandOverview = async () => {
     setIsDemandModalOpen(true);
+    setDemandOverviewData([]);
 
     try {
       const res = await fetch(`${API_BASE_URL}/farmer/${farmerId}/demand-overview`);
       const payload = await res.json();
-      if (payload.success) {
-        setDemandOverviewData(payload.data);
-      }
+      const data = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(payload.records)
+        ? payload.records
+        : payload.data || payload.items || [];
+      setDemandOverviewData(data || []);
     } catch (err) {
       console.error('Failed to load demand overview:', err);
+      setDemandOverviewData([]);
     }
   };
 
@@ -626,24 +633,26 @@ const AIDemand = () => {
               </tr>
             </thead>
             <tbody>
-              {stocks.filter(stock => getDaysUntilExpiry(stock.expiryDate) >= 0).map((stock) => {
+              {stocks.map((stock) => {
                 const prediction = aiPredictions.find(p => p.id === stock.id);
+                const daysLeft = getDaysUntilExpiry(stock.expiryDate);
+                const expiryLabel = daysLeft >= 0 ? `${daysLeft} days` : 'Expired';
                 return (
                   <tr key={stock.id}>
                     <td>{stock.id}</td>
                     <td>{stock.vegetableName}</td>
                     <td>{stock.quantityKg} kg</td>
-                    <td style={{ color: '#16a34a', fontWeight: 'bold' }}>{prediction?.estimatedDemand} kg</td>
-                    <td>Rs. {stock.pricePerKg}</td>
-                    <td style={{ color: '#2563eb', fontWeight: 'bold' }}>Rs. {prediction?.suggestedPrice}</td>
-                    <td>{stock.qualityGrade}</td>
-                    <td style={{ color: prediction?.daysLeft <= 3 ? '#dc2626' : 'inherit', fontWeight: prediction?.daysLeft <= 3 ? 'bold' : 'normal' }}>
-                      {prediction?.daysLeft >= 0 ? `${prediction?.daysLeft} days` : 'Expired'}
+                    <td style={{ color: '#16a34a', fontWeight: 'bold' }}>{prediction?.estimatedDemand ?? '-'} kg</td>
+                    <td>Rs. {stock.pricePerKg ?? '-'}</td>
+                    <td style={{ color: '#2563eb', fontWeight: 'bold' }}>Rs. {prediction?.suggestedPrice ?? '-'}</td>
+                    <td>{stock.qualityGrade ?? '-'}</td>
+                    <td style={{ color: daysLeft <= 3 ? '#dc2626' : 'inherit', fontWeight: daysLeft <= 3 ? 'bold' : 'normal' }}>
+                      {stock.expiryDate ? expiryLabel : 'Unknown'}
                     </td>
-                    <td><span className={`risk-badge ${prediction?.risk?.toLowerCase()}`}>{prediction?.risk}</span></td>
-                    <td><span className={`status-badge ${stock.status?.toLowerCase().replace(/\s+/g, '-')}`}>{stock.status}</span></td>
-                    <td style={{ color: prediction?.potentialLoss > 0 ? '#dc2626' : 'inherit', fontWeight: prediction?.potentialLoss > 0 ? 'bold' : 'normal' }}>
-                      {prediction?.potentialLoss > 0 ? `Rs. ${prediction?.potentialLoss}` : '-'}
+                    <td><span className={`risk-badge ${String(prediction?.risk || 'unknown').toLowerCase()}`}>{prediction?.risk ?? 'Unknown'}</span></td>
+                    <td><span className={`status-badge ${String(stock.status || 'unknown').toLowerCase().replace(/\s+/g, '-')}`}>{stock.status || 'Unknown'}</span></td>
+                    <td style={{ color: (prediction?.potentialLoss ?? 0) > 0 ? '#dc2626' : 'inherit', fontWeight: (prediction?.potentialLoss ?? 0) > 0 ? 'bold' : 'normal' }}>
+                      {(prediction?.potentialLoss ?? 0) > 0 ? `Rs. ${prediction?.potentialLoss}` : '-'}
                     </td>
                     <td>
                       <button className="action-btn edit-btn" onClick={() => handleEdit(stock.id)}>Edit</button>
