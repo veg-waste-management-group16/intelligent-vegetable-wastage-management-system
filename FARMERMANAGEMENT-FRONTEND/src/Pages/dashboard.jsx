@@ -4,7 +4,10 @@ import { API_BASE_URL } from '../api/config';
 
 const FarmerDashboard = () => {
     const [stocks, setStocks] = useState([]);
-    const [farmerId, setFarmerId] = useState('F001');
+    const [farmerId, setFarmerId] = useState(() => {
+      const user = JSON.parse(sessionStorage.getItem('loggedUser') || 'null');
+      return user?.farmerId || user?.id || '';
+    });
     const [wastageReport, setWastageReport] = useState(null);
     const [criticalSpoilageCount, setCriticalSpoilageCount] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -12,7 +15,8 @@ const FarmerDashboard = () => {
 
     useEffect(() => {
         const loggedUserStr = sessionStorage.getItem('loggedUser');
-        const resolvedFarmerId = loggedUserStr ? (JSON.parse(loggedUserStr)?.farmerId || 'F001') : 'F001';
+        const loggedUser = loggedUserStr ? JSON.parse(loggedUserStr) : null;
+        const resolvedFarmerId = loggedUser?.farmerId || loggedUser?.id || '';
         setFarmerId(resolvedFarmerId);
         fetchDashboardData(resolvedFarmerId);
     }, []);
@@ -23,9 +27,9 @@ const FarmerDashboard = () => {
 
         try {
             const [stocksResponse, wastageResponse, criticalResponse] = await Promise.allSettled([
-                fetch(`${API_BASE_URL}/farmer/${resolvedFarmerId}`),
-                fetch(`${API_BASE_URL}/farmer/${resolvedFarmerId}/wastage-report`),
-                fetch(`${API_BASE_URL}/farmer/${resolvedFarmerId}/critical-spoilage`),
+                fetch(`${API_BASE_URL}/farmer/stocks/farmer/${resolvedFarmerId}`),
+                fetch(`${API_BASE_URL}/farmer/stocks/farmer/${resolvedFarmerId}/wastage-report`),
+                fetch(`${API_BASE_URL}/farmer/stocks/farmer/${resolvedFarmerId}/critical-spoilage`),
             ]);
 
             if (stocksResponse.status === 'fulfilled' && stocksResponse.value.ok) {
@@ -80,6 +84,7 @@ const FarmerDashboard = () => {
         outOfStock: stocks.filter((s) => s.status === 'Out of Stock').length,
         criticalSpoilage: criticalSpoilageCount,
         financialWastage: wastageReport?.totalFinancialLoss ?? stocks.reduce((acc, curr) => acc + Number(curr.financialLoss || 0), 0),
+        totalWastageKg: wastageReport?.totalWastageKg ?? 0,
     };
 
     const financialWastageValue = Number(stats.financialWastage || 0);

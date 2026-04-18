@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../Css/profile.css';
 
 const Profile = () => {
 	const navigate = useNavigate();
 
+	const user = JSON.parse(sessionStorage.getItem('loggedUser') || '{}');
+
+	useEffect(() => {
+		if (!user || !user.role || user.role !== 'FARMER') {
+			navigate('/');
+		}
+	}, [navigate, user]);
+
 	const farmer = {
-		farmerId: 'F001',
-		fullName: 'Nimal Perera',
-		phone: '+94 77 123 4567',
-		email: 'nimal.farmer@example.com',
-		farmName: 'Green Valley Farm',
-		district: 'Kandy',
-		address: 'No. 24, Temple Road, Kandy',
-		joinedDate: '2025-08-12',
+		farmerId: user.farmerId || user.id || '',
+		fullName: user.name || '',
+		phone: user.phone || '',
+		email: user.email || '',
+		district: user.farmLocation || '',
+		address: user.deliveryAddress || user.address || '',
+		joinedDate: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '-',
 	};
 
 	const handleLogout = () => {
@@ -21,32 +28,7 @@ const Profile = () => {
 		navigate('/');
 	};
 
-	const lands = [
-		{
-			id: 1,
-			name: 'North Field',
-			hectares: 5.5,
-			mainCrop: 'Carrot',
-		},
-		{
-			id: 2,
-			name: 'South Plantation',
-			hectares: 8.2,
-			mainCrop: 'Leeks',
-		},
-		{
-			id: 3,
-			name: 'East Grove',
-			hectares: 3.8,
-			mainCrop: 'Cabbage',
-		},
-		{
-			id: 4,
-			name: 'West Orchard',
-			hectares: 6.0,
-			mainCrop: 'Tomato',
-		},
-	];
+	const lands = user.lands || [];
 
 	const totalHectares = lands.reduce((sum, land) => sum + land.hectares, 0).toFixed(1);
 

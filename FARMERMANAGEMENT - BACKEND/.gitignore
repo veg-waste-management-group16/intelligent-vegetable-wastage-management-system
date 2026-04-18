@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore Notification Files
+/FARMERMANAGEMENT - BACKEND/src/main/java/com/farmer/farmermanagementbackend/Controller/NotificationController.java
+/FARMERMANAGEMENT - BACKEND/src/main/java/com/farmer/farmermanagementbackend/Model/Notification.java
+/FARMERMANAGEMENT - BACKEND/src/main/java/com/farmer/farmermanagementbackend/Repository/NotificationRepository.java
+/FARMERMANAGEMENT - BACKEND/src/main/java/com/farmer/farmermanagementbackend/Service/DataInitializer.java
+/FARMERMANAGEMENT - BACKEND/src/main/java/com/farmer/farmermanagementbackend/Service/NotificationService.java
