@@ -3,7 +3,10 @@ import '../Css/wastagerep.css';
 import { API_BASE_URL } from '../api/config';
 
 const WastageReport = () => {
-    const [farmerId, setFarmerId] = useState('F001'); // Default test ID
+    const [farmerId, setFarmerId] = useState(() => {
+        const user = JSON.parse(sessionStorage.getItem('loggedUser') || 'null');
+        return user?.farmerId || user?.id || '';
+    });
     const [farmerName, setFarmerName] = useState('Test Farmer');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -21,12 +24,13 @@ const WastageReport = () => {
         const loggedUserStr = sessionStorage.getItem('loggedUser');
         if (loggedUserStr) {
             const loggedUser = JSON.parse(loggedUserStr);
-            setFarmerId(loggedUser.farmerId);
-            setFarmerName(loggedUser.name || loggedUser.farmerId);
-            loadReport(loggedUser.farmerId);
+            const resolvedFarmerId = loggedUser.farmerId || loggedUser.id || '';
+            setFarmerId(resolvedFarmerId);
+            setFarmerName(loggedUser.name || resolvedFarmerId);
+            loadReport(resolvedFarmerId);
         } else {
-            console.log("No user logged in, loading test data...");
-            loadReport('F001');
+            console.log("No user logged in, should redirect...");
+            loadReport(farmerId);
         }
     }, []);
 
@@ -34,7 +38,7 @@ const WastageReport = () => {
         setLoading(true);
         setError('');
 
-        fetch(`${API_BASE}/farmer/${fId}/wastage-report`)
+        fetch(`${API_BASE}/farmer/stocks/farmer/${fId}/wastage-report`)
             .then(r => {
                 if (!r.ok) throw new Error('Backend not reachable');
                 return r.json();

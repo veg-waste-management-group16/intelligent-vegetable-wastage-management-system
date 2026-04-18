@@ -29,7 +29,7 @@ const vegetableOptions = Object.keys(vegetableCategoryMap);
 const AddStockForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        farmerId: 'F001',
+        farmerId: JSON.parse(sessionStorage.getItem('loggedUser') || '{}')?.farmerId || '',
         vegetableName: '',
         category: '',
         harvestDate: '',
@@ -137,7 +137,7 @@ const AddStockForm = () => {
 
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/add`, {
+            const response = await fetch(`${API_BASE_URL}/farmer/stocks/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -151,11 +151,11 @@ const AddStockForm = () => {
             if (response.ok) {
                 window.alert('Stock successfully added!');
                 if (actionType === 'add_another') {
-                    setFormData({ farmerId: 'F001', vegetableName: '', category: '', harvestDate: '', quantityKg: '', pricePerKg: '', qualityGrade: '', expiryEstimate: '' });
+                    setFormData({ farmerId: JSON.parse(sessionStorage.getItem('loggedUser') || '{}')?.farmerId || '', vegetableName: '', category: '', harvestDate: '', quantityKg: '', pricePerKg: '', qualityGrade: '', expiryEstimate: '' });
                     setTouched({});
                     setErrors({});
                 } else if (actionType === 'close') {
-                    navigate('/view-stock');
+                    navigate('/farmer/view-stock');
                 }
             } else {
                 const data = await response.json();
@@ -257,7 +257,7 @@ const AddStockForm = () => {
                         <button type="button" className="btn" onClick={() => handleSubmit('close')} disabled={loading} style={{ backgroundColor: '#28a745', color: '#fff' }}>
                             {loading ? 'Processing...' : 'Save & Close'}
                         </button>
-                        <button type="button" className="btn" onClick={() => navigate('/view-stock')} disabled={loading} style={{ backgroundColor: '#dc3545', color: '#fff', marginLeft: 'auto' }}>
+                        <button type="button" className="btn" onClick={() => navigate('/farmer/view-stock')} disabled={loading} style={{ backgroundColor: '#dc3545', color: '#fff', marginLeft: 'auto' }}>
                             Cancel
                         </button>
                     </div>

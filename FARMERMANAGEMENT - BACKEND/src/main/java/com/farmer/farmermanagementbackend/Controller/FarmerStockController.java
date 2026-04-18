@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/farmer/stocks")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
 public class FarmerStockController {
 
     @Autowired
@@ -51,7 +51,7 @@ public class FarmerStockController {
 
     // ==================== READ OPERATIONS ====================
 
-// Change this method in FarmerStockController.java
+    // Change this method in FarmerStockController.java
     @GetMapping("/farmer/{farmerId}")
     public ResponseEntity<List<FarmerStockResponseDTO>> getAllStocksByFarmerId(@PathVariable String farmerId) {
         try {
@@ -64,11 +64,12 @@ public class FarmerStockController {
                     .collect(Collectors.toList());
 
             // 3. CRITICAL: Return ONLY the list. No HashMap, no "data" key.
-            return ResponseEntity.ok(responseList); 
+            return ResponseEntity.ok(responseList);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("/available")
     public ResponseEntity<?> getAllAvailableStocks() {
         try {
@@ -350,8 +351,7 @@ public class FarmerStockController {
                     updateDTO.getQuantityKg(),
                     updateDTO.getPricePerKg(),
                     updateDTO.getQualityGrade(),
-                    updateDTO.getAvailabilityStatus()
-            );
+                    updateDTO.getAvailabilityStatus());
 
             FarmerStockResponseDTO responseDTO = convertToResponseDTO(updatedStock);
 
@@ -621,8 +621,7 @@ public class FarmerStockController {
                     "zeroQuantityCount", zeroQtyCount,
                     "outOfStockCount", outOfStockCount,
                     "expiredCount", expiredCount,
-                    "totalCount", zeroQtyCount + outOfStockCount + expiredCount
-            ));
+                    "totalCount", zeroQtyCount + outOfStockCount + expiredCount));
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
@@ -644,6 +643,7 @@ public class FarmerStockController {
         FarmerStockResponseDTO dto = new FarmerStockResponseDTO();
         dto.setStockId(stock.getStockId());
         dto.setFarmerId(stock.getFarmerId());
+        dto.setOrderId(stock.getOrderId());
         dto.setVegetableName(stock.getVegetableName());
         dto.setCategory(stock.getCategory());
         dto.setHarvestDate(stock.getHarvestDate());

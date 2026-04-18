@@ -15,6 +15,9 @@ public class FarmerStock {
     @Column(nullable = false, length = 50)
     private String farmerId;
 
+    @Column(length = 80)
+    private String orderId;
+
     @Column(nullable = false, length = 100)
     private String vegetableName;
 
@@ -174,6 +177,14 @@ public class FarmerStock {
         this.updatedAt = updatedAt;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -190,6 +201,7 @@ public class FarmerStock {
         return "FarmerStock{" +
                 "stockId=" + stockId +
                 ", farmerId='" + farmerId + '\'' +
+                ", orderId='" + orderId + '\'' +
                 ", vegetableName='" + vegetableName + '\'' +
                 ", category='" + category + '\'' +
                 ", harvestDate=" + harvestDate +

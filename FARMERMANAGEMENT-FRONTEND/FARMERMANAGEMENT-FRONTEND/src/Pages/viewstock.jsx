@@ -6,7 +6,10 @@ function ViewStock() {
   const [stocks, setStocks] = useState([]);
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [farmerId] = useState('F001'); // Change this based on logged-in user
+  const [farmerId] = useState(() => {
+    const user = JSON.parse(sessionStorage.getItem('loggedUser') || 'null');
+    return user?.farmerId || user?.id || '';
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [sortBy, setSortBy] = useState('name-asc');
@@ -26,7 +29,7 @@ function ViewStock() {
     try {
       // Changed port to 8080 and used API_BASE_URL
       // Assumes backend endpoint is: GET /api/farmer/stocks/farmer/{farmerId}
-      const res = await fetch(`${API_BASE_URL}/farmer/${farmerId}`);
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/farmer/${farmerId}`);
       
       if (!res.ok) throw new Error('Failed to fetch data from server');
       
@@ -35,6 +38,7 @@ function ViewStock() {
       const formattedStocks = rawStocks.map(item => ({
         ...item,
         id: item.stockId || item.id,
+        orderId: item.orderId || item.orderID || '',
         expiryDate: item.expiryEstimate || item.expiryDate,
         status: item.availabilityStatus || item.status || 'Available',
       }));
@@ -54,7 +58,7 @@ function ViewStock() {
     if (!stockToDelete) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/${stockToDelete.id}`, {
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${stockToDelete.id}`, {
         method: 'DELETE',
       });
 
@@ -86,7 +90,7 @@ function ViewStock() {
     const price = parseFloat(editForm.pricePerKg);
     
     try {
-      const res = await fetch(`${API_BASE_URL}/${editForm.id}`, {
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${editForm.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -263,6 +267,7 @@ function ViewStock() {
           <table className="stock-table">
             <thead>
               <tr>
+                <th>Order ID</th>
                 <th>Vegetable</th>
                 <th>Category</th>
                 <th>Quality</th>
@@ -279,15 +284,16 @@ function ViewStock() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="11">Connecting to farm database...</td>
+                  <td colSpan="12">Connecting to farm database...</td>
                 </tr>
               ) : filteredStocks.length === 0 ? (
                 <tr>
-                  <td colSpan="11">No stocks found for this farmer.</td>
+                  <td colSpan="12">No stocks found for this farmer.</td>
                 </tr>
               ) : (
                 filteredStocks.map((stock) => (
                   <tr key={stock.id}>
+                    <td>{stock.orderId || '-'}</td>
                     <td>{stock.vegetableName}</td>
                     <td>{stock.category}</td>
                     <td>{stock.qualityGrade || '-'}</td>

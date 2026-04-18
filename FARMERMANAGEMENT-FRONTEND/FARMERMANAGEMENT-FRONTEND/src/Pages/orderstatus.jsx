@@ -10,9 +10,7 @@ const OrderStatus = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const API_ORDER_URL = API_BASE_URL.replace('/stocks', '/orders');
-  const farmerId = sessionStorage.getItem('loggedUser') 
-                   ? JSON.parse(sessionStorage.getItem('loggedUser'))?.farmerId || 'F001' 
-                   : 'F001';
+  const farmerId = JSON.parse(sessionStorage.getItem('loggedUser') || '{}')?.farmerId || '';
 
   useEffect(() => {
     fetchOrders();

@@ -6,7 +6,10 @@ import { API_BASE_URL } from '../api/config';
 const AIDemand = () => {
   const [stocks, setStocks] = useState([]);
   const [predictionsByStockId, setPredictionsByStockId] = useState({});
-  const [farmerId, setFarmerId] = useState('F001');
+  const [farmerId, setFarmerId] = useState(() => {
+    const user = JSON.parse(sessionStorage.getItem('loggedUser') || 'null');
+    return user?.farmerId || user?.id || '';
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedStockId, setSelectedStockId] = useState('');
@@ -22,7 +25,8 @@ const AIDemand = () => {
   // Load farmer ID from session and fetch live stock data.
   useEffect(() => {
     const loggedUserStr = sessionStorage.getItem('loggedUser');
-    const resolvedFarmerId = loggedUserStr ? (JSON.parse(loggedUserStr)?.farmerId || 'F001') : 'F001';
+    const loggedUser = loggedUserStr ? JSON.parse(loggedUserStr) : null;
+    const resolvedFarmerId = loggedUser?.farmerId || loggedUser?.id || '';
     setFarmerId(resolvedFarmerId);
     fetchStocks(resolvedFarmerId);
   }, []);
@@ -31,7 +35,7 @@ const AIDemand = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/farmer/${resolvedFarmerId}`);
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/farmer/${resolvedFarmerId}`);
       if (!res.ok) {
         throw new Error('Failed to load stocks from backend');
       }
@@ -60,42 +64,14 @@ const AIDemand = () => {
     }
   };
 
-  const fetchPredictionForStock = async (stockId) => {
-    const res = await fetch(`${API_BASE_URL}/${stockId}/predict-price`);
-    if (!res.ok) {
-      throw new Error(`Prediction failed for stock ${stockId}`);
-    }
-    const payload = await res.json();
-    return payload.data || null;
-  };
-
   useEffect(() => {
     if (!stocks.length) {
       setPredictionsByStockId({});
       return;
     }
 
-    const loadPredictions = async () => {
-      try {
-        const settled = await Promise.allSettled(
-          stocks.map((stock) => fetchPredictionForStock(stock.id))
-        );
-
-        const nextPredictions = {};
-        stocks.forEach((stock, index) => {
-          const result = settled[index];
-          if (result.status === 'fulfilled' && result.value) {
-            nextPredictions[stock.id] = result.value;
-          }
-        });
-
-        setPredictionsByStockId(nextPredictions);
-      } catch {
-        setPredictionsByStockId({});
-      }
-    };
-
-    loadPredictions();
+    // No specialized prediction backend available; populate with empty prediction data.
+    setPredictionsByStockId({});
   }, [stocks]);
 
   // Auto-populate price when vegetable is selected
@@ -142,7 +118,7 @@ const AIDemand = () => {
     if (!selectedStockId || !priceInput) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/${selectedStockId}/price`, {
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${selectedStockId}/price`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pricePerKg: priceInput })
@@ -163,7 +139,7 @@ const AIDemand = () => {
     if (!selectedStockId || !statusInput) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/${selectedStockId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${selectedStockId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ availabilityStatus: statusInput })
@@ -184,7 +160,7 @@ const AIDemand = () => {
     if (!selectedStockId || !qtyInput) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/${selectedStockId}/quantity`, {
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${selectedStockId}/quantity`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantityKg: qtyInput })
@@ -205,7 +181,7 @@ const AIDemand = () => {
     if (!window.confirm('Are you sure you want to delete this stock?')) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/${stockId}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/farmer/stocks/${stockId}`, { method: 'DELETE' });
       if (res.ok) {
         setStocks(stocks.filter(s => s.id !== stockId));
         alert('Stock deleted successfully');
@@ -248,25 +224,24 @@ const AIDemand = () => {
     setIsQuickActionOpen(true);
   };
 
-  const openDemandOverview = async () => {
+  const openDemandOverview = () => {
     setIsDemandModalOpen(true);
-    setDemandOverviewData([]);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/farmer/${farmerId}/demand-overview`);
-      const payload = await res.json();
-      const data = Array.isArray(payload)
-        ? payload
-        : Array.isArray(payload.data)
-        ? payload.data
-        : Array.isArray(payload.records)
-        ? payload.records
-        : payload.data || payload.items || [];
-      setDemandOverviewData(data || []);
-    } catch (err) {
-      console.error('Failed to load demand overview:', err);
-      setDemandOverviewData([]);
-    }
+    const demandData = stocks.map((stock) => {
+      const quantity = Number(stock.quantityKg || 0);
+      const demandEstimate = Math.max(0, Math.round(quantity * (stock.status === 'Low Stock' ? 0.85 : 0.75)));
+      const suggestedPrice = Number((Number(stock.pricePerKg || 0) * (stock.status === 'Low Stock' ? 0.95 : 0.9)).toFixed(2));
+      return {
+        stockId: stock.id,
+        vegetableName: stock.vegetableName,
+        category: stock.category,
+        quantityKg: quantity,
+        currentPricePerKg: Number(stock.pricePerKg || 0),
+        suggestedPricePerKg: suggestedPrice,
+        estimatedDemandKg: demandEstimate,
+        riskLevel: stock.status === 'Low Stock' ? 'High' : 'Medium',
+      };
+    });
+    setDemandOverviewData(demandData);
   };
 
   function getDaysUntilExpiry(expiryDate) {

@@ -71,7 +71,18 @@ public class FarmerStockService {
             farmerStock.setExpiryEstimate(LocalDate.parse(stockDTO.getExpiryEstimate(), formatter));
         }
 
-        return farmerStockRepository.save(farmerStock);
+        FarmerStock savedStock = farmerStockRepository.save(farmerStock);
+        String orderId = generateOrderId(savedStock.getFarmerId(), savedStock.getStockId());
+        savedStock.setOrderId(orderId);
+        return farmerStockRepository.save(savedStock);
+    }
+
+    private String generateOrderId(String farmerId, Integer stockId) {
+        if (farmerId == null || stockId == null) {
+            return null;
+        }
+        String cleanFarmerId = farmerId.replaceAll("[^A-Za-z0-9]", "");
+        return cleanFarmerId + "-" + stockId;
     }
     // ==================== READ OPERATIONS ====================
 

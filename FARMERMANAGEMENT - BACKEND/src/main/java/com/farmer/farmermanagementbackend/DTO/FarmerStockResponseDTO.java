@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public class FarmerStockResponseDTO {
     private Integer stockId;
     private String farmerId;
+    private String orderId;
     private String vegetableName;
     private String category;
     private LocalDate harvestDate;
@@ -27,12 +28,13 @@ public class FarmerStockResponseDTO {
     private String recommendation;
 
     // Constructors
-    public FarmerStockResponseDTO() {}
+    public FarmerStockResponseDTO() {
+    }
 
     public FarmerStockResponseDTO(Integer stockId, String farmerId, String vegetableName,
-                                  String category, LocalDate harvestDate, Double quantityKg,
-                                  Double pricePerKg, String qualityGrade, LocalDate expiryEstimate,
-                                  String availabilityStatus, String spoilageRisk) {
+            String category, LocalDate harvestDate, Double quantityKg,
+            Double pricePerKg, String qualityGrade, LocalDate expiryEstimate,
+            String availabilityStatus, String spoilageRisk) {
         this.stockId = stockId;
         this.farmerId = farmerId;
         this.vegetableName = vegetableName;
@@ -61,6 +63,14 @@ public class FarmerStockResponseDTO {
 
     public void setFarmerId(String farmerId) {
         this.farmerId = farmerId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public String getVegetableName() {
