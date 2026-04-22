@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing - Veg Wastage System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f4f0; }
+
+        .header {
+            background: #2d6a4f;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 22px; }
+
+        .container { padding: 30px; max-width: 1200px; margin: auto; }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .search-bar button {
+            padding: 12px 25px;
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-btn {
+            padding: 8px 18px;
+            border: 2px solid #2d6a4f;
+            background: white;
+            color: #2d6a4f;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .filter-btn.active {
+            background: #2d6a4f;
+            color: white;
+        }
+        .filter-btn.risk-btn {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        .filter-btn.risk-btn:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .add-btn {
+            background: #52b788;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .delete-expired-btn {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* Risk Summary Bar */
+        .risk-summary {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .risk-card {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        .risk-card.high { background: #ff4444; }
+        .risk-card.medium { background: #ff8800; }
+        .risk-card.low { background: #2d6a4f; }
+        .risk-card .count { font-size: 28px; }
+        .risk-card .label { font-size: 13px; margin-top: 4px; }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #2d6a4f;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card.high-risk { border-left-color: #ff4444; }
+        .card.medium-risk { border-left-color: #ff8800; }
+        .card.low-risk { border-left-color: #2d6a4f; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .card h3 { color: #2d6a4f; font-size: 18px; flex: 1; }
+        .risk-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+        .risk-badge.HIGH { background: #ff4444; }
+        .risk-badge.MEDIUM { background: #ff8800; }
+        .risk-badge.LOW { background: #2d6a4f; }
+
+        .card p { color: #555; font-size: 14px; margin-bottom: 5px; }
+
+        .discount-banner {
+            background: linear-gradient(135deg, #ff4444, #ff6b6b);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 5px 5px 10px 0;
+        }
+        .tag.available { background: #d8f3dc; color: #2d6a4f; }
+        .tag.low { background: #fff3cd; color: #856404; }
+        .tag.out_of_stock { background: #f8d7da; color: #721c24; }
+        .tag.visible { background: #cce5ff; color: #004085; }
+        .tag.hidden { background: #f8d7da; color: #721c24; }
+
+        .price-section { margin: 8px 0; }
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 13px;
+        }
+        .discounted-price {
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .normal-price {
+            color: #2d6a4f;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .card-actions { display: flex; gap: 8px; margin-top: 15px; }
+        .btn-visibility {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            background: #52b788;
+            color: white;
+        }
+        .btn-delete {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            background: #e63946;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 { color: #2d6a4f; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group textarea { height: 80px; resize: vertical; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-submit {
+            flex: 1; padding: 12px;
+            background: #2d6a4f; color: white;
+            border: none; border-radius: 6px;
+            cursor: pointer; font-size: 15px;
+        }
+        .btn-cancel {
+            flex: 1; padding: 12px;
+            background: #ccc; color: #333;
+            border: none; border-radius: 6px;
+            cursor: pointer; font-size: 15px;
+        }
+
+        .message {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .message.success { background: #d8f3dc; color: #2d6a4f; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; display: block; }
+
+        .ai-label {
+            font-size: 11px;
+            background: #e8f4fd;
+            color: #0066cc;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d6a4f;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #d8f3dc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🌿 Vegetable Product Listings</h1>
+    <span>Intelligent Wastage Management System</span>
+</div>
+
+<div class="container">
+
+    <div id="message" class="message"></div>
+
+    <!-- AI Risk Summary -->
+    <div class="risk-summary" id="riskSummary">
+        <div class="risk-card high">
+            <div class="count" id="highCount">0</div>
+            <div class="label">🔴 High Risk</div>
+        </div>
+        <div class="risk-card medium">
+            <div class="count" id="mediumCount">0</div>
+            <div class="label">🟡 Medium Risk</div>
+        </div>
+        <div class="risk-card low">
+            <div class="count" id="lowCount">0</div>
+            <div class="label">🟢 Fresh / Low Risk</div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products (e.g. Tomato, Carrot...)"/>
+        <button onclick="searchListings()">🔍 Search</button>
+        <button onclick="loadAllListings()" style="background:#52b788">Show All</button>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filters">
+        <button class="filter-btn active" onclick="loadAllListings()">All Listings</button>
+        <button class="filter-btn" onclick="filterVisible()">👁 Visible Only</button>
+        <button class="filter-btn risk-btn" onclick="loadRiskSorted()">🔴 High Risk First</button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="add-btn" onclick="openModal()">+ Add New Listing</button>
+        <button class="delete-expired-btn" onclick="deleteExpired()">🗑 Remove Expired Listings</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="section-title" id="sectionTitle">All Listings</div>
+    <div class="cards" id="listingsContainer">
+        <p>Loading listings...</p>
+    </div>
+</div>
+
+<!-- Add Listing Modal -->
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <h2>➕ Add New Listing</h2>
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="newTitle" placeholder="e.g. Fresh Tomatoes"/>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="newDesc" placeholder="Describe the product..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Farmer ID</label>
+            <input type="number" id="newFarmerId" value="1"/>
+        </div>
+        <div class="form-group">
+            <label>Stock ID</label>
+            <input type="number" id="newStockId" value="1"/>
+        </div>
+        <div class="form-group">
+            <label>Expiry Date & Time</label>
+            <input type="datetime-local" id="newExpiry"/>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-submit" onclick="createListing()">✅ Add Listing</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = 'http://localhost:8080/api/listings';
+
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+        setTimeout(() => { msg.className = 'message'; }, 3000);
+    }
+
+    function updateRiskSummary(listings) {
+        const high = listings.filter(l => l.riskLevel === 'HIGH').length;
+        const medium = listings.filter(l => l.riskLevel === 'MEDIUM').length;
+        const low = listings.filter(l => l.riskLevel === 'LOW' || !l.riskLevel).length;
+        document.getElementById('highCount').textContent = high;
+        document.getElementById('mediumCount').textContent = medium;
+        document.getElementById('lowCount').textContent = low;
+    }
+
+    function renderCards(listings) {
+        const container = document.getElementById('listingsContainer');
+        if (listings.length === 0) {
+            container.innerHTML = '<p style="color:#555;font-size:16px;">No listings found.</p>';
+            return;
+        }
+
+        // Sort HIGH risk first
+        listings.sort((a, b) => {
+            const order = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+            return (order[b.riskLevel] || 0) - (order[a.riskLevel] || 0);
+        });
+
+        updateRiskSummary(listings);
+
+        container.innerHTML = listings.map(l => {
+            const risk = l.riskLevel || 'LOW';
+            const riskClass = risk.toLowerCase() + '-risk';
+
+            const riskEmoji = risk === 'HIGH' ? '🔴' :
+                              risk === 'MEDIUM' ? '🟡' : '🟢';
+
+            const riskLabel = risk === 'HIGH' ? 'HIGH RISK - Sell Fast!' :
+                              risk === 'MEDIUM' ? 'MEDIUM RISK' : 'FRESH';
+
+            const discount = l.suggestedDiscount || 0;
+            const price = l.farmerStock?.pricePerKg || 0;
+            const discountedPrice = Math.round(price * (1 - discount / 100));
+
+            const discountBanner = discount > 0 ? `
+                <div class="discount-banner">
+                    <span>🏷️ AI Suggested Discount: ${discount}% OFF</span>
+                    <span>Save Rs.${price - discountedPrice}/kg</span>
+                </div>` : '';
+
+            const priceSection = discount > 0 ? `
+                <div class="price-section">
+                    <span class="original-price">Rs. ${price}/kg</span>
+                    <span class="discounted-price"> → Rs. ${discountedPrice}/kg</span>
+                </div>` : `
+                <div class="price-section">
+                    <span class="normal-price">Rs. ${price}/kg</span>
+                </div>`;
+
+            return `
+            <div class="card ${riskClass}">
+                <div class="card-header">
+                    <h3>${l.title}</h3>
+                    <span class="risk-badge ${risk}">
+                        ${riskEmoji} ${riskLabel}
+                    </span>
+                </div>
+                <p>${l.description || ''}</p>
+
+                ${discountBanner}
+
+                <br/>
+                <span class="tag ${l.farmerStock?.availabilityStatus || ''}">
+                    ${l.farmerStock?.availabilityStatus || 'N/A'}
+                </span>
+                <span class="tag ${l.isVisible ? 'visible' : 'hidden'}">
+                    ${l.isVisible ? '👁 Visible' : '🙈 Hidden'}
+                </span>
+
+                ${priceSection}
+                <p><strong>Quantity:</strong> ${l.farmerStock?.quantityKg || 'N/A'} kg</p>
+                <p><strong>Category:</strong> ${l.farmerStock?.category || 'N/A'}</p>
+                <p><strong>Expires:</strong> ${l.expiresAt ? new Date(l.expiresAt).toLocaleDateString() : 'N/A'}</p>
+
+                <div class="card-actions">
+                    <button class="btn-visibility"
+                        onclick="toggleVisibility(${l.listingId}, ${l.isVisible})"
+                        style="background:${l.isVisible ? '#ff8800' : '#52b788'}">
+                        ${l.isVisible ? '🙈 Hide' : '👁 Show'}
+                    </button>
+                    <button class="btn-delete"
+                        onclick="deleteListing(${l.listingId})">
+                        🗑 Delete
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function loadAllListings() {
+        document.getElementById('sectionTitle').textContent = 'All Listings';
+        const res = await fetch(API);
+        const data = await res.json();
+        renderCards(data);
+    }
+
+    async function loadRiskSorted() {
+        document.getElementById('sectionTitle').textContent = '🔴 High Risk Listings First';
+        try {
+            const res = await fetch(`${API}/sorted-by-risk`);
+            const data = await res.json();
+            renderCards(data);
+        } catch {
+            // fallback - sort client side
+            const res = await fetch(API);
+            const data = await res.json();
+            renderCards(data);
+        }
+    }
+
+    async function searchListings() {
+    const keyword = document.getElementById('searchInput').value.trim();
+    if (!keyword) {
+        loadAllListings();
+        return;
+    }
+    document.getElementById('sectionTitle').textContent = `Search: "${keyword}"`;
+    const res = await fetch(`${API}/search?keyword=${encodeURIComponent(keyword)}`);
+    const data = await res.json();
+    if (data.length === 0) {
+        document.getElementById('listingsContainer').innerHTML =
+            '<p style="color:#555;font-size:16px;">No listings found for "' + keyword + '"</p>';
+    } else {
+        renderCards(data);
+    }
+}
+
+    async function filterVisible() {
+        document.getElementById('sectionTitle').textContent = '👁 Visible Listings Only';
+        const res = await fetch(`${API}/filter/visible`);
+        const data = await res.json();
+        renderCards(data);
+    }
+
+    async function toggleVisibility(id, current) {
+        await fetch(`${API}/${id}/visibility?isVisible=${!current}`, { method: 'PATCH' });
+        showMessage('Visibility updated successfully!', 'success');
+        loadAllListings();
+    }
+
+    async function deleteListing(id) {
+        if (!confirm('Are you sure you want to delete this listing?')) return;
+        await fetch(`${API}/${id}`, { method: 'DELETE' });
+        showMessage('Listing deleted!', 'success');
+        loadAllListings();
+    }
+
+    async function deleteExpired() {
+        if (!confirm('Remove all expired listings?')) return;
+        const res = await fetch(`${API}/expired`, { method: 'DELETE' });
+        const msg = await res.text();
+        showMessage(msg, 'success');
+        loadAllListings();
+    }
+
+    async function createListing() {
+        const title = document.getElementById('newTitle').value;
+        const expiry = document.getElementById('newExpiry').value;
+
+        if (!title || !expiry) {
+            showMessage('Please fill in Title and Expiry Date!', 'error');
+            return;
+        }
+
+        const stockId = parseInt(document.getElementById('newStockId').value);
+        const body = {
+            farmerId: parseInt(document.getElementById('newFarmerId').value),
+            title: title,
+            description: document.getElementById('newDesc').value,
+            isVisible: true,
+            expiresAt: expiry + ':00',
+            farmerStock: { stockId: stockId }
+        };
+
+        const res = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            showMessage('Listing created successfully!', 'success');
+            closeModal();
+            loadAllListings();
+        } else {
+            showMessage('Error! Make sure Stock ID exists in database.', 'error');
+        }
+    }
+
+    function openModal() { document.getElementById('addModal').classList.add('show'); }
+    function closeModal() {
+        document.getElementById('addModal').classList.remove('show');
+        document.getElementById('newTitle').value = '';
+        document.getElementById('newDesc').value = '';
+        document.getElementById('newExpiry').value = '';
+    }
+
+    // Load on startup
+    loadAllListings();
+</script>
+</body>
+</html>
