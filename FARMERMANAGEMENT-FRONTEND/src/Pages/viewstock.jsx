@@ -267,7 +267,7 @@ function ViewStock() {
           <table className="stock-table">
             <thead>
               <tr>
-                <th>Order ID</th>
+                <th>Stock ID</th>
                 <th>Vegetable</th>
                 <th>Category</th>
                 <th>Quality</th>
@@ -293,7 +293,7 @@ function ViewStock() {
               ) : (
                 filteredStocks.map((stock) => (
                   <tr key={stock.id}>
-                    <td>{stock.orderId || '-'}</td>
+                    <td>{stock.id || '-'}</td>
                     <td>{stock.vegetableName}</td>
                     <td>{stock.category}</td>
                     <td>{stock.qualityGrade || '-'}</td>

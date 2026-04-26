@@ -289,6 +289,11 @@ public class FarmerStockService {
         demandRates.put("Cabbage", 7.0);
         demandRates.put("Cucumber", 6.5);
         demandRates.put("Onion", 9.0);
+        demandRates.put("Beans", 6.5);
+        demandRates.put("Cauliflower", 7.5);
+        demandRates.put("Okra", 5.5);
+        demandRates.put("Brinjal", 7.0);
+        demandRates.put("Green chilli", 8.0);
 
         // Default rates by category if specific vegetable not found
         String vegLower = vegetableName.toLowerCase();

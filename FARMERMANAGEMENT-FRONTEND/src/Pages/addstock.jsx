@@ -28,8 +28,13 @@ const vegetableOptions = Object.keys(vegetableCategoryMap);
 
 const AddStockForm = () => {
     const navigate = useNavigate();
+    const getResolvedFarmerId = () => {
+        const user = JSON.parse(sessionStorage.getItem('loggedUser') || '{}');
+        return user?.farmerId || user?.id || '';
+    };
+
     const [formData, setFormData] = useState({
-        farmerId: JSON.parse(sessionStorage.getItem('loggedUser') || '{}')?.farmerId || '',
+        farmerId: getResolvedFarmerId(),
         vegetableName: '',
         category: '',
         harvestDate: '',
@@ -151,7 +156,7 @@ const AddStockForm = () => {
             if (response.ok) {
                 window.alert('Stock successfully added!');
                 if (actionType === 'add_another') {
-                    setFormData({ farmerId: JSON.parse(sessionStorage.getItem('loggedUser') || '{}')?.farmerId || '', vegetableName: '', category: '', harvestDate: '', quantityKg: '', pricePerKg: '', qualityGrade: '', expiryEstimate: '' });
+                    setFormData({ farmerId: getResolvedFarmerId(), vegetableName: '', category: '', harvestDate: '', quantityKg: '', pricePerKg: '', qualityGrade: '', expiryEstimate: '' });
                     setTouched({});
                     setErrors({});
                 } else if (actionType === 'close') {

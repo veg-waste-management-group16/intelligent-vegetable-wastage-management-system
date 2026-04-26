@@ -26,6 +26,7 @@ public class FarmerStockController {
     // ==================== CREATE OPERATIONS ====================
 
     @PostMapping("/add")
+    // Frontend sends data to this URL to create new stock.
     public ResponseEntity<?> addNewStock(@RequestBody FarmerStockDTO stockDTO) {
         try {
             FarmerStock savedStock = farmerStockService.addNewStock(stockDTO);
@@ -50,8 +51,6 @@ public class FarmerStockController {
     }
 
     // ==================== READ OPERATIONS ====================
-
-    // Change this method in FarmerStockController.java
     @GetMapping("/farmer/{farmerId}")
     public ResponseEntity<List<FarmerStockResponseDTO>> getAllStocksByFarmerId(@PathVariable String farmerId) {
         try {

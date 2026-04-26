@@ -18,6 +18,7 @@ const WastageReport = () => {
 
     const API_BASE = API_BASE_URL;
     const getProfitGain = (item) => Number(item.profitGain ?? item.financialLoss ?? 0);
+    const getUnitPrice = (item) => Number(item.unitPrice ?? item.pricePerKg ?? item.price ?? 0);
     const getTotalProfitGain = (items) => items.reduce((sum, item) => sum + getProfitGain(item), 0);
 
     useEffect(() => {
@@ -93,11 +94,11 @@ const WastageReport = () => {
             item.currentQuantityKg ?? item.stockKg ?? '',
             item.potentialWastageKg ?? item.wastageKg ?? '',
             item.quantitySold ?? '',
-            item.unitPrice ?? '',
+            getUnitPrice(item).toFixed(2),
             item.daysUntilExpiry ?? item.daysLeft ?? '',
             item.severity || item.wastageSeverity || '',
             getProfitGain(item).toFixed(2),
-            ((item.potentialWastageKg ?? 0) * (item.unitPrice ?? 0)).toFixed(2),
+            ((item.potentialWastageKg ?? item.wastageKg ?? 0) * getUnitPrice(item)).toFixed(2),
         ]);
 
         const escapeValue = (value) => {
@@ -216,15 +217,15 @@ const WastageReport = () => {
                                 <tbody>
                                     {filteredItems.map((item) => (
                                         <tr key={item.stockId}>
-                                            <td>{item.vegetableName}</td>
-                                            <td>{item.currentQuantityKg} kg</td>
-                                            <td style={{color: '#EF4444', fontWeight: 'bold'}}>{item.potentialWastageKg} kg</td>
-                                            <td>{item.quantitySold} kg</td>
-                                            <td>Rs. {item.unitPrice}</td>
-                                            <td>{item.daysUntilExpiry}d</td>
-                                            <td><span className={`risk-badge ${item.severity.toLowerCase()}`}>{getSeverityLabel(item.severity)}</span></td>
+                                            <td>{item.vegetableName || 'Unknown'}</td>
+                                            <td>{item.currentQuantityKg ?? item.stockKg ?? 0} kg</td>
+                                            <td style={{color: '#EF4444', fontWeight: 'bold'}}>{item.potentialWastageKg ?? item.wastageKg ?? 0} kg</td>
+                                            <td>{item.quantitySold ?? 0} kg</td>
+                                            <td>Rs. {getUnitPrice(item).toFixed(2)}</td>
+                                            <td>{item.daysUntilExpiry ?? item.daysLeft ?? 0}d</td>
+                                            <td><span className={`risk-badge ${(item.severity || 'NONE').toLowerCase()}`}>{getSeverityLabel(item.severity || 'NONE')}</span></td>
                                             <td style={{color: '#16A34A', fontWeight: 'bold'}}>Rs. {getProfitGain(item).toFixed(2)}</td>
-                                            <td style={{color: '#DC2626', fontWeight: 'bold'}}>Rs. {(item.potentialWastageKg * item.unitPrice).toFixed(2)}</td>
+                                            <td style={{color: '#DC2626', fontWeight: 'bold'}}>Rs. {((item.potentialWastageKg ?? item.wastageKg ?? 0) * getUnitPrice(item)).toFixed(2)}</td>
                                         </tr>
                                     ))}
                                     {filteredItems.length === 0 && (

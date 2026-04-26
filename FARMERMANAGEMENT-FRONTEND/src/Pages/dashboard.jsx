@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../Css/dashboard.css';
 import { API_BASE_URL } from '../api/config';
 
 const FarmerDashboard = () => {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        sessionStorage.removeItem('loggedUser');
+        navigate('/');
+    };
     const [stocks, setStocks] = useState([]);
     const [farmerId, setFarmerId] = useState(() => {
       const user = JSON.parse(sessionStorage.getItem('loggedUser') || 'null');
@@ -135,8 +141,18 @@ const FarmerDashboard = () => {
         <main className="main-content dashboard-page">
             <header className="top-bar">
                 <div className="greeting">
-                    <h1>Welcome back, {farmerId}</h1>
-                    <p className="greeting-sub">Live stock, spoilage, and wastage overview from the backend</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <h1 style={{ margin: 0 }}>Welcome back, {farmerId}</h1>
+                        <button 
+                            onClick={handleLogout}
+                            style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', transition: 'background-color 0.2s', boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                    <p className="greeting-sub" style={{ marginTop: '4px' }}>Live stock, spoilage, and wastage overview from the backend</p>
                 </div>
                 <div className="top-bar-right">
                     <div className="top-bar-badge">

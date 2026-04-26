@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/farmer/orders")
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
+@RequestMapping({ "/api/farmer/orders", "/api/orders" })
+@CrossOrigin(origins = "*")
 public class FarmerOrderController {
 
     @Autowired
@@ -28,6 +28,11 @@ public class FarmerOrderController {
     // GET /api/farmer/orders/farmer/{farmerId}
     @GetMapping("/farmer/{farmerId}")
     public ResponseEntity<Map<String, Object>> getOrdersByFarmer(@PathVariable String farmerId) {
+        if (farmerId == null || farmerId.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "farmerId is required"));
+        }
         return ResponseEntity.ok(orderService.getOrdersByFarmer(farmerId));
     }
 

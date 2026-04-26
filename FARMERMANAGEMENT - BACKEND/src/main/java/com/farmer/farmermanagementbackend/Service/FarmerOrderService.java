@@ -18,8 +18,7 @@ public class FarmerOrderService {
 
     // ── Valid statuses in order ────────────────────────────────
     private static final List<String> VALID_STATUSES = Arrays.asList(
-            "PENDING", "CONFIRMED", "READY", "DISPATCHED", "DELIVERED", "CANCELLED", "REJECTED"
-    );
+            "PENDING", "CONFIRMED", "READY", "DISPATCHED", "DELIVERED", "CANCELLED", "REJECTED");
 
     // ══════════════════════════════════════════════════════════
     // CREATE ORDER
@@ -28,20 +27,43 @@ public class FarmerOrderService {
         Map<String, Object> resp = new HashMap<>();
         try {
             // Validation
-            if (dto.getFarmerId()     == null || dto.getFarmerId().isBlank())     { resp.put("success",false); resp.put("message","Farmer ID is required");    return resp; }
-            if (dto.getVegetableName()== null || dto.getVegetableName().isBlank()){ resp.put("success",false); resp.put("message","Vegetable name is required"); return resp; }
-            if (dto.getCustomerName() == null || dto.getCustomerName().isBlank()) { resp.put("success",false); resp.put("message","Customer name is required");  return resp; }
-            if (dto.getQuantityKg()   == null || dto.getQuantityKg() <= 0)        { resp.put("success",false); resp.put("message","Quantity must be > 0");        return resp; }
-            if (dto.getPricePerKg()   == null || dto.getPricePerKg() <= 0)        { resp.put("success",false); resp.put("message","Price must be > 0");           return resp; }
-            if (dto.getPaymentMethod()== null || dto.getPaymentMethod().isBlank()){ resp.put("success",false); resp.put("message","Payment method is required");  return resp; }
+            if (dto.getFarmerId() == null || dto.getFarmerId().isBlank()) {
+                resp.put("success", false);
+                resp.put("message", "Farmer ID is required");
+                return resp;
+            }
+            if (dto.getVegetableName() == null || dto.getVegetableName().isBlank()) {
+                resp.put("success", false);
+                resp.put("message", "Vegetable name is required");
+                return resp;
+            }
+            if (dto.getCustomerName() == null || dto.getCustomerName().isBlank()) {
+                resp.put("success", false);
+                resp.put("message", "Customer name is required");
+                return resp;
+            }
+            if (dto.getQuantityKg() == null || dto.getQuantityKg() <= 0) {
+                resp.put("success", false);
+                resp.put("message", "Quantity must be > 0");
+                return resp;
+            }
+            if (dto.getPricePerKg() == null || dto.getPricePerKg() <= 0) {
+                resp.put("success", false);
+                resp.put("message", "Price must be > 0");
+                return resp;
+            }
+            if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
+                resp.put("success", false);
+                resp.put("message", "Payment method is required");
+                return resp;
+            }
 
             FarmerOrder order = new FarmerOrder(
                     dto.getFarmerId(), dto.getStockId(), dto.getVegetableName(),
                     dto.getCustomerName(), dto.getCustomerId(),
                     dto.getQuantityKg(), dto.getPricePerKg(),
                     dto.getPaymentMethod().toUpperCase(),
-                    dto.getDeliveryAddress(), dto.getNotes()
-            );
+                    dto.getDeliveryAddress(), dto.getNotes());
 
             FarmerOrder saved = orderRepository.save(order);
             resp.put("success", true);
@@ -62,7 +84,8 @@ public class FarmerOrderService {
         try {
             List<FarmerOrder> orders = orderRepository.findByFarmerIdOrderByCreatedAtDesc(farmerId);
             List<FarmerOrderResponseDTO> dtos = new ArrayList<>();
-            for (FarmerOrder o : orders) dtos.add(toDTO(o));
+            for (FarmerOrder o : orders)
+                dtos.add(toDTO(o));
             resp.put("success", true);
             resp.put("data", dtos);
             resp.put("count", dtos.size());
@@ -83,7 +106,8 @@ public class FarmerOrderService {
             List<FarmerOrder> orders = orderRepository
                     .findByFarmerIdAndOrderStatusOrderByCreatedAtDesc(farmerId, status.toUpperCase());
             List<FarmerOrderResponseDTO> dtos = new ArrayList<>();
-            for (FarmerOrder o : orders) dtos.add(toDTO(o));
+            for (FarmerOrder o : orders)
+                dtos.add(toDTO(o));
             resp.put("success", true);
             resp.put("data", dtos);
             resp.put("count", dtos.size());
@@ -100,7 +124,11 @@ public class FarmerOrderService {
     public Map<String, Object> getOrderById(Integer orderId) {
         Map<String, Object> resp = new HashMap<>();
         Optional<FarmerOrder> opt = orderRepository.findById(orderId);
-        if (opt.isEmpty()) { resp.put("success", false); resp.put("message", "Order not found"); return resp; }
+        if (opt.isEmpty()) {
+            resp.put("success", false);
+            resp.put("message", "Order not found");
+            return resp;
+        }
         resp.put("success", true);
         resp.put("data", toDTO(opt.get()));
         return resp;
@@ -112,17 +140,27 @@ public class FarmerOrderService {
     public Map<String, Object> updateOrderStatus(Integer orderId, UpdateOrderStatusDTO dto) {
         Map<String, Object> resp = new HashMap<>();
         try {
+            if (dto == null || dto.getOrderStatus() == null || dto.getOrderStatus().isBlank()) {
+                resp.put("success", false);
+                resp.put("message", "Order status is required");
+                return resp;
+            }
             if (!VALID_STATUSES.contains(dto.getOrderStatus().toUpperCase())) {
                 resp.put("success", false);
                 resp.put("message", "Invalid status. Valid: " + VALID_STATUSES);
                 return resp;
             }
             Optional<FarmerOrder> opt = orderRepository.findById(orderId);
-            if (opt.isEmpty()) { resp.put("success", false); resp.put("message", "Order not found"); return resp; }
+            if (opt.isEmpty()) {
+                resp.put("success", false);
+                resp.put("message", "Order not found");
+                return resp;
+            }
 
             FarmerOrder order = opt.get();
             order.setOrderStatus(dto.getOrderStatus().toUpperCase());
-            if (dto.getNotes() != null && !dto.getNotes().isBlank()) order.setNotes(dto.getNotes());
+            if (dto.getNotes() != null && !dto.getNotes().isBlank())
+                order.setNotes(dto.getNotes());
             FarmerOrder updated = orderRepository.save(order);
 
             resp.put("success", true);
@@ -141,7 +179,11 @@ public class FarmerOrderService {
     public Map<String, Object> deleteOrder(Integer orderId) {
         Map<String, Object> resp = new HashMap<>();
         try {
-            if (!orderRepository.existsById(orderId)) { resp.put("success",false); resp.put("message","Order not found"); return resp; }
+            if (!orderRepository.existsById(orderId)) {
+                resp.put("success", false);
+                resp.put("message", "Order not found");
+                return resp;
+            }
             orderRepository.deleteById(orderId);
             resp.put("success", true);
             resp.put("message", "Order deleted successfully");
@@ -176,8 +218,8 @@ public class FarmerOrderService {
         // Build human-readable summary sentence
         // e.g. "Customer Gunathilaka bought 5.0 kg of Beans, paid using Card."
         String pm = o.getPaymentMethod() == null ? "Cash"
-                : o.getPaymentMethod().substring(0,1).toUpperCase()
-                + o.getPaymentMethod().substring(1).toLowerCase().replace("_"," ");
+                : o.getPaymentMethod().substring(0, 1).toUpperCase()
+                        + o.getPaymentMethod().substring(1).toLowerCase().replace("_", " ");
         String summary = "Customer " + o.getCustomerName()
                 + " bought " + o.getQuantityKg() + " kg of " + o.getVegetableName()
                 + ", paid using " + pm + "."
@@ -190,16 +232,17 @@ public class FarmerOrderService {
     }
 
     private String statusColor(String status) {
-        if (status == null) return "grey";
+        if (status == null)
+            return "grey";
         return switch (status.toUpperCase()) {
-            case "PENDING"    -> "amber";
-            case "CONFIRMED"  -> "blue";
-            case "READY"      -> "blue";
+            case "PENDING" -> "amber";
+            case "CONFIRMED" -> "blue";
+            case "READY" -> "blue";
             case "DISPATCHED" -> "blue";
-            case "DELIVERED"  -> "green";
-            case "CANCELLED"  -> "grey";
-            case "REJECTED"   -> "red";
-            default            -> "grey";
+            case "DELIVERED" -> "green";
+            case "CANCELLED" -> "grey";
+            case "REJECTED" -> "red";
+            default -> "grey";
         };
     }
 }
