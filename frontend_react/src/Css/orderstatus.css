@@ -1,0 +1,52 @@
+/* ── Orders — VegLife design system ── */
+.order-page { min-height: 100vh; background: var(--bg, #f2f6f2); padding: 0 28px 40px; }
+.order-header, .order-container { max-width: 1260px; margin-left: auto; margin-right: auto; }
+
+.order-header {
+  background: linear-gradient(135deg, #1a3a0a 0%, #2d5a1b 60%, #1e4010 100%);
+  border-radius: 18px; padding: 26px 30px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.order-header::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+.order-header h1 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 800; color: white; margin-bottom: 4px; position: relative; z-index: 1; }
+.order-header p   { font-size: 0.86rem; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
+
+.order-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+.order-search input, .order-filter select {
+  padding: 10px 14px; border: 1.5px solid #d0e8c8; border-radius: 10px;
+  font-size: 0.86rem; font-family: 'DM Sans', sans-serif; background: white;
+  color: #1a3a0a; outline: none; transition: border-color 0.2s;
+}
+.order-search input { min-width: 240px; }
+.order-search input:focus, .order-filter select:focus { border-color: #4a9e3f; box-shadow: 0 0 0 3px rgba(74,158,63,0.08); }
+
+.order-status-text { text-align: center; padding: 20px; color: #8a9e8a; }
+.order-status-error { color: #c0392b; }
+
+.order-table-wrapper { background: white; border-radius: 16px; border: 1px solid #e0f0da; overflow-x: auto; box-shadow: 0 2px 12px rgba(26,58,10,0.06); }
+.order-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.order-table thead { background: #f0faf0; }
+.order-table th { padding: 13px 16px; text-align: left; font-size: 0.72rem; font-weight: 800; color: #1a3a0a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e0f0da; white-space: nowrap; }
+.order-table td { padding: 13px 16px; border-bottom: 1px solid #f0f5f0; color: #4a5c4a; vertical-align: middle; }
+.order-table tbody tr:hover td { background: #f8fdf6; }
+.order-table tbody tr:last-child td { border-bottom: none; }
+.text-muted { font-size: 0.76rem; color: #8a9e8a; margin-top: 2px; }
+
+/* Status badges */
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.status-pending    { background: #fff3e0; color: #e67e22; }
+.status-confirmed  { background: #e3f2fd; color: #2980b9; }
+.status-ready      { background: #e8f5e9; color: #2d5a1b; }
+.status-dispatched { background: #fffde7; color: #e8a820; }
+.status-delivered  { background: #e8f5e9; color: #2d5a1b; border: 1px solid #c8e6c9; }
+.status-cancelled  { background: #fdecea; color: #c0392b; }
+
+.action-btn { padding: 7px 14px; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.btn-update { background: linear-gradient(135deg, #4a9e3f, #2d5a1b); color: white; }
+.btn-update:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(45,90,27,0.25); }
+
+@media (max-width: 768px) { .order-page { padding: 0 16px 28px; } .order-search input { min-width: unset; width: 100%; } }

@@ -1,0 +1,58 @@
+/* ── Financial Report — VegLife design system ── */
+.report-container { min-height: 100vh; background: var(--bg, #f2f6f2); }
+.main-wrapper { max-width: 1260px; margin: 0 auto; padding: 32px 28px; }
+
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+.page-header-left h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; color: #1a3a0a; margin-bottom: 4px; }
+.page-subtitle { font-size: 0.86rem; color: #8a9e8a; }
+.page-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.farmer-badge { background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; color: #2d5a1b; }
+.download-btn, .refresh-btn {
+  padding: 10px 18px; border-radius: 10px; border: none;
+  font-size: 0.84rem; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.download-btn { background: linear-gradient(135deg, #2980b9, #1a5c8a); color: white; }
+.download-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(41,128,185,0.3); }
+.refresh-btn  { background: #f0f0f0; color: #4a5c4a; }
+.refresh-btn:hover  { background: #e0e0e0; }
+
+/* KPI grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi-card { background: white; border-radius: 16px; padding: 22px; border: 1px solid #e0f0da; box-shadow: 0 2px 12px rgba(26,58,10,0.06); }
+.kpi-stock   { border-left: 4px solid #4a9e3f; }
+.kpi-wastage { border-left: 4px solid #e67e22; }
+.kpi-loss    { border-left: 4px solid #c0392b; }
+.kpi-profit  { border-left: 4px solid #2980b9; }
+.kpi-value { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 800; color: #1a3a0a; line-height: 1; margin-bottom: 4px; }
+.kpi-label { font-size: 0.76rem; color: #8a9e8a; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+/* Filter tabs */
+.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.tab-btn {
+  padding: 8px 18px; border-radius: 20px; border: 1.5px solid #d0e8c8;
+  background: white; color: #4a5c4a; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.tab-btn:hover { border-color: #4a9e3f; color: #2d5a1b; }
+.tab-btn.active { background: linear-gradient(135deg, #4a9e3f, #2d5a1b); color: white; border-color: transparent; }
+
+/* Table */
+.items-section.table-wrapper { background: white; border-radius: 16px; border: 1px solid #e0f0da; overflow-x: auto; box-shadow: 0 2px 12px rgba(26,58,10,0.06); }
+.wastage-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.wastage-table thead { background: #f0faf0; }
+.wastage-table th { padding: 13px 16px; text-align: left; font-size: 0.72rem; font-weight: 800; color: #1a3a0a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e0f0da; white-space: nowrap; }
+.wastage-table td { padding: 12px 16px; border-bottom: 1px solid #f0f5f0; color: #4a5c4a; vertical-align: middle; }
+.wastage-table tbody tr:hover td { background: #f8fdf6; }
+.wastage-table tbody tr:last-child td { border-bottom: none; }
+.empty-row { color: #8a9e8a; }
+
+/* Risk / severity badges */
+.risk-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+.risk-badge.critical { background: #fdecea; color: #c0392b; }
+.risk-badge.high     { background: #fff3e0; color: #e67e22; }
+.risk-badge.medium   { background: #fffde7; color: #e8a820; }
+.risk-badge.low      { background: #e8f5e9; color: #2d5a1b; }
+.risk-badge.none     { background: #f0f0f0; color: #8a9e8a; }
+
+@media (max-width: 768px) { .main-wrapper { padding: 20px 16px; } .kpi-grid { grid-template-columns: 1fr 1fr; } }

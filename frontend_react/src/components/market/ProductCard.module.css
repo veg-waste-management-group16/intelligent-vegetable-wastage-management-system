@@ -1,0 +1,155 @@
+.card {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(26,58,10,0.09);
+  border: 1px solid rgba(74,158,63,0.12);
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(26,58,10,0.18);
+  border-color: rgba(74,158,63,0.3);
+}
+
+/* Image */
+.imgWrap {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+  background: #e8f5e9;
+}
+.img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.card:hover .img { transform: scale(1.08); }
+
+/* Hover overlay */
+.hoverOverlay {
+  position: absolute; inset: 0;
+  background: rgba(26,58,10,0.4);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card:hover .hoverOverlay { opacity: 1; }
+.viewBtn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  background: white; color: #1a3a0a;
+  border: none; border-radius: 10px;
+  font-size: 0.88rem; font-weight: 700;
+  cursor: pointer;
+  transform: translateY(8px);
+  transition: transform 0.3s;
+}
+.card:hover .viewBtn { transform: translateY(0); }
+
+/* Badges */
+.topBadges {
+  position: absolute; top: 10px; left: 10px;
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.riskBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700;
+  color: white;
+}
+.high { background: #d4722a; }
+.medium { background: #e8a820; color: #1a2510; }
+.low { background: #4a9e3f; }
+
+.discountBadge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.68rem; font-weight: 800;
+  background: #c0392b; color: white;
+  letter-spacing: 0.5px;
+}
+.categoryChip {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(255,255,255,0.9);
+  color: #2d5a1b;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+/* Info */
+.info {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.titleRow {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
+.title {
+  font-size: 0.98rem; font-weight: 700; color: #1a3a0a;
+  line-height: 1.3;
+  flex: 1;
+}
+.rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.78rem; font-weight: 700; color: #e8a820;
+  flex-shrink: 0;
+}
+.meta {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.location, .time {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.74rem; color: #8a9e7a;
+}
+.farmerName {
+  font-size: 0.75rem; color: #6a8a6a;
+  font-style: italic;
+}
+.priceRow {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 4px;
+}
+.priceBlock { display: flex; align-items: baseline; gap: 6px; }
+.oldPrice {
+  font-size: 0.8rem; color: #b0b0b0;
+  text-decoration: line-through;
+}
+.price {
+  font-size: 1.18rem; font-weight: 800;
+  color: #2d5a1b;
+}
+.perKg { font-size: 0.75rem; color: #8a9e7a; }
+.stock {
+  font-size: 0.74rem; font-weight: 700;
+}
+.qty {
+  font-size: 0.75rem; color: #8a9e7a;
+}
+.addBtn {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #2d5a1b, #4a9e3f);
+  color: white; border: none;
+  border-radius: 12px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: auto;
+  font-family: 'Hind', sans-serif;
+}
+.addBtn:hover { background: linear-gradient(135deg, #1a3a0a, #2d5a1b); transform: scale(1.02); }
+.addBtn.disabled {
+  background: #d0d0d0; color: #888; cursor: not-allowed;
+}
+.addBtn.adding {
+  background: linear-gradient(135deg, #d4722a, #e8a820);
+  transform: scale(1.02);
+}

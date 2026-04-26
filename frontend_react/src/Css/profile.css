@@ -1,0 +1,78 @@
+/* ── Farmer Profile — VegLife design system ── */
+.profile-page { min-height: 100vh; background: var(--bg, #f2f6f2); padding: 32px 28px; max-width: 100%; }
+
+.profile-card {
+  max-width: 860px; margin: 0 auto 24px;
+  background: white; border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(26,58,10,0.08);
+  border: 1px solid #e0f0da; overflow: hidden;
+}
+.profile-header {
+  background: linear-gradient(135deg, #1a3a0a 0%, #2d5a1b 60%, #1e4010 100%);
+  padding: 28px 32px; position: relative; overflow: hidden;
+}
+.profile-header::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+.profile-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; position: relative; z-index: 1; }
+.profile-header h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 800; color: white; }
+.profile-header p   { font-size: 0.86rem; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
+
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 24px 32px; }
+.profile-item { padding: 13px 0; border-bottom: 1px solid #f0f5f0; display: flex; flex-direction: column; gap: 3px; padding-right: 20px; }
+.profile-item:nth-last-child(-n+2) { border-bottom: none; }
+.profile-item span { font-size: 0.72rem; font-weight: 700; color: #8a9e8a; text-transform: uppercase; letter-spacing: 0.5px; }
+.profile-item strong { font-size: 0.9rem; font-weight: 600; color: #1a3a0a; }
+.profile-item-wide { grid-column: 1 / -1; }
+
+.profile-actions { display: flex; gap: 12px; padding: 0 32px 28px; flex-wrap: wrap; }
+.profile-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 11px 22px; border-radius: 10px;
+  font-size: 0.86rem; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s; border: none;
+  text-decoration: none;
+}
+.profile-btn-primary { background: linear-gradient(135deg, #4a9e3f, #2d5a1b); color: white; }
+.profile-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(45,90,27,0.3); }
+.profile-btn-secondary { background: #f0f5f0; color: #2d5a1b; border: 1.5px solid #c8e6c9; }
+.profile-btn-secondary:hover { background: #e8f5e9; }
+.profile-btn-logout { background: #fdecea; color: #c0392b; border: 1.5px solid #f5c6cb; }
+.profile-btn-logout:hover { background: #fcc; }
+.profile-btn-icon { width: 18px; height: 18px; }
+
+/* Lands section */
+.lands-section { max-width: 860px; margin: 0 auto; }
+.lands-header { margin-bottom: 18px; }
+.lands-header h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #1a3a0a; margin-bottom: 4px; }
+.lands-header p  { font-size: 0.84rem; color: #8a9e8a; }
+
+.lands-stats { display: flex; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.stat-box { background: white; border-radius: 12px; padding: 14px 20px; border: 1px solid #e0f0da; box-shadow: 0 2px 8px rgba(26,58,10,0.05); min-width: 120px; }
+.stat-label { display: block; font-size: 0.72rem; font-weight: 700; color: #8a9e8a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.stat-value { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 800; color: #2d5a1b; }
+
+.lands-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.land-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid #e0f0da; box-shadow: 0 2px 8px rgba(26,58,10,0.05); transition: transform 0.2s, box-shadow 0.2s; }
+.land-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(26,58,10,0.1); }
+.land-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.land-card-header h3 { font-size: 0.96rem; font-weight: 700; color: #1a3a0a; }
+.land-id { font-size: 0.72rem; font-weight: 700; color: #8a9e8a; background: #f0f5f0; padding: 3px 9px; border-radius: 20px; }
+.land-details { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.land-detail-item { display: flex; justify-content: space-between; font-size: 0.84rem; }
+.land-detail-label { color: #8a9e8a; font-weight: 600; }
+.land-detail-value { color: #1a3a0a; font-weight: 700; }
+.land-card-btn { width: 100%; padding: 9px; border-radius: 9px; border: 1.5px solid #d0e8c8; background: #f0faf0; color: #2d5a1b; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.land-card-btn:hover { background: #e8f5e9; border-color: #4a9e3f; }
+
+/* Empty lands */
+.lands-empty { text-align: center; padding: 40px; background: white; border-radius: 16px; border: 1px dashed #c8e6c9; color: #8a9e8a; font-size: 0.9rem; }
+
+@media (max-width: 640px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-page  { padding: 20px 16px; }
+  .profile-actions { padding: 0 20px 24px; }
+  .profile-header, .profile-grid { padding-left: 20px; padding-right: 20px; }
+}
